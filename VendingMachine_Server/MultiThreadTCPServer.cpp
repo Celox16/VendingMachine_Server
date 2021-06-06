@@ -56,7 +56,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		else if (retval == 0)
 			break;
 
-		// 받은 데이터 출력
+		// 받은 데이터 출력 test
 		buf[retval] = '\0';
 		printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
 			ntohs(clientaddr.sin_port), buf);
