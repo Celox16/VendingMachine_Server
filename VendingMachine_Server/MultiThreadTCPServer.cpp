@@ -6,6 +6,11 @@
 #define SERVERPORT	9000
 #define BUFSIZE		1024
 
+//////////define variables and functions///////////
+extern void SetVendingMachineInfo(char vendingMachineInfo[]);
+char vendingMachineInfo[12];
+///////////////////////////////////////////////////
+
 // 소켓 함수 오류 출력후 종료
 void err_quit(char* msg)
 {
@@ -40,7 +45,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	int retval;
 	SOCKADDR_IN clientaddr;
 	int addrlen;
-	char buf[BUFSIZE + 1];
+	int buf[BUFSIZE + 1];
 
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
@@ -48,7 +53,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 	while (1) {
 		// 데이터 받기
-		retval = recv(client_sock, buf, BUFSIZE, 0);
+		retval = recv(client_sock, (char*)&buf, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
 			break;
@@ -56,13 +61,18 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		else if (retval == 0)
 			break;
 
-		// 받은 데이터 출력 test
+		// 받은 데이터 출력
 		buf[retval] = '\0';
 		printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
 			ntohs(clientaddr.sin_port), buf);
 
+		//SetVendingMachineInfo(buf);
+		printf("%d %d\n", buf[0], buf[1]);
+		buf[0] = 3;
+		buf[1] = 4;
+
 		// 데이터 보내기
-		retval = send(client_sock, buf, retval, 0);
+		retval = send(client_sock, (char*)&buf, retval, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
 			break;
