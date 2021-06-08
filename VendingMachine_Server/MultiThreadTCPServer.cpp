@@ -1,4 +1,4 @@
-#pragma comment(lib, "ws2_32")
+ï»¿#pragma comment(lib, "ws2_32")
 #include <winsock2.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -22,7 +22,7 @@ struct moneyInfo {
 };
 ///////////////////////////////////////////////////
 
-// ¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·ÂÈÄ Á¾·á
+// ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 void err_quit(char* msg)
 {
 	LPVOID lpMsgBuf;
@@ -36,7 +36,7 @@ void err_quit(char* msg)
 	exit(1);
 }
 
-//¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·Â
+//ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 void err_display(char* msg)
 {
 	LPVOID lpMsgBuf;
@@ -49,7 +49,7 @@ void err_display(char* msg)
 	LocalFree(lpMsgBuf);
 }
 
-// Å¬¶óÀÌ¾ðÆ®¿Í µ¥ÀÌÅÍ Åë½Å
+// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
 	SOCKET client_sock = (SOCKET)arg;
@@ -62,12 +62,16 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	moneyInfo money[BUFSIZE + 1];
 	///////////////////////////////////////////////
 
-	// Å¬¶óÀÌ¾ðÆ® Á¤º¸ ¾ò±â
+	// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
 	while (1) {
-		// µ¥ÀÌÅÍ ¹Þ±â
+		/////////////////////////////////////////////////////
+
+		///////////////////////////////////////////////////////
+
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
 		retval = recv(client_sock, (char*)&drink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
@@ -76,9 +80,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		else if (retval == 0)
 			break;
 
-		//retval = recv(client_sock, (char*)&money, BUFSIZE, 0);
-
-		// ¹ÞÀº µ¥ÀÌÅÍ Ãâ·Â
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 		buf[retval] = '\0';
 		printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
 			ntohs(clientaddr.sin_port), drink);
@@ -88,7 +90,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		drink[0].price = 3;
 		drink[1].price = 4;
 
-		// µ¥ÀÌÅÍ º¸³»±â
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		retval = send(client_sock, (char*)&drink, retval, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
@@ -108,7 +110,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 	//closesocket
 	closesocket(client_sock);
-	printf("[TCP ¼­¹ö] Å¬¶óÀÌ¾ðÆ® Á¾·á: IP ÁÖ¼Ò=%s, Æ÷Æ® ¹øÈ£=%d\n",
+	printf("[TCP ï¿½ï¿½ï¿½ï¿½] Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½ï¿½ï¿½ï¿½: IP ï¿½Ö¼ï¿½=%s, ï¿½ï¿½Æ® ï¿½ï¿½È£=%d\n",
 		inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 	return 0;
@@ -118,7 +120,7 @@ int main(int argc, char* argv[])
 {
 	int retval;
 
-	// À©¼Ó ÃÊ±âÈ­
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
@@ -140,7 +142,7 @@ int main(int argc, char* argv[])
 	retval = listen(listen_sock, SOMAXCONN);
 	if (retval == SOCKET_ERROR) err_quit("listen()");
 
-	// µ¥ÀÌÅÍ Åë½Å¿¡ »ç¿ëÇÒ º¯¼ö
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	SOCKET client_sock;
 	SOCKADDR_IN clientaddr;
 	int addrlen;
@@ -155,11 +157,11 @@ int main(int argc, char* argv[])
 			break;
 		}
 
-		// Á¢¼ÓÇÑ Å¬¶óÀÌ¾ðÆ® Á¤º¸ Ãâ·Â
-		printf("\n[TCP ¼­¹ö] Å¬¶óÀÌ¾ðÆ® Á¢¼Ó: IP ÁÖ¼Ò=%s, Æ÷Æ® ¹øÈ£=%d\n",
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+		printf("\n[TCP ï¿½ï¿½ï¿½ï¿½] Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½ï¿½ï¿½ï¿½: IP ï¿½Ö¼ï¿½=%s, ï¿½ï¿½Æ® ï¿½ï¿½È£=%d\n",
 			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
-		// ½º·¹µå »ý¼º
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		hThread = CreateThread(NULL, 0, ProcessClient,
 			(LPVOID)client_sock, 0, NULL);
 		if (hThread == NULL) { closesocket(client_sock); }
@@ -169,7 +171,7 @@ int main(int argc, char* argv[])
 	//closesocket
 	closesocket(listen_sock);
 
-	// À©¼Ó Á¾·á
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	WSACleanup();
 	return 0;
 }
