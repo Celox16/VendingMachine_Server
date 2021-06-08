@@ -6,10 +6,10 @@
 #define SERVERPORT	9000
 #define BUFSIZE		1024
 
-//////////define variables and functions///////////테스트용
-extern void SetVendingMachineInfo(char vendingMachineInfo[]);
-char vendingMachineInfo[12];
+#define DRINK_SIZE	5
+#define MONEY_SIZE	5
 
+//////////define variables and functions///////////
 struct drinkInfo {
 	char name[20];
 	int price;
@@ -20,6 +20,15 @@ struct moneyInfo {
 	int value;
 	int count;
 };
+
+extern void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]);
+extern void ModifyDrinkInfo(drinkInfo originDrink[], drinkInfo modifyDrink[]);
+extern void ModifyMoneyInfo(moneyInfo originMoney[], moneyInfo modifyMoney[]);
+
+
+
+drinkInfo originDrink[DRINK_SIZE];
+moneyInfo originMoney[MONEY_SIZE];
 ///////////////////////////////////////////////////
 
 // 소켓 함수 오류 출력후 종료
@@ -52,58 +61,67 @@ void err_display(char* msg)
 // 클라이언트와 데이터 통신
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
-	SOCKET client_sock = (SOCKET)arg;
-	int retval;
+	SOCKET client_sock = (SOCKET)arg; // drink socket
+	int retval; // drink retval
 	SOCKADDR_IN clientaddr;
 	int addrlen;
 	int buf[BUFSIZE + 1];
-	////////if array is struct array?////////////
-	drinkInfo drink[BUFSIZE + 1];
-	moneyInfo money[BUFSIZE + 1];
-	///////////////////////////////////////////////
+
+	////// from client data /////////
+	drinkInfo fromClientDrink[DRINK_SIZE];
+	moneyInfo fromClientMoney[MONEY_SIZE];
+
+	SetInitial(originDrink, originMoney);
 
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
-	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
+	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen); // getpeername - drink
 
 	while (1) {
-		// 데이터 받기
-		retval = recv(client_sock, (char*)&drink, BUFSIZE, 0);
+		// data receive drink array data
+		retval = recv(client_sock, (char*)&fromClientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
+			err_display("drink receive");
 			break;
 		}
 		else if (retval == 0)
 			break;
+		printf("recv\n");
 
-		//retval = recv(client_sock, (char*)&money, BUFSIZE, 0);
+		// send drink array data to client
+		retval = send(client_sock, (char*)&fromClientDrink, BUFSIZE, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("money data send");
+			break;
+		}
+		printf("send\n");
+
+		// data receive money array data
+		retval = recv(client_sock, (char*)&fromClientMoney, BUFSIZE, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("money receive");
+			break;
+		}
+		else if (retval == 0)
+			break;
+		printf("recv2\n");
+		
+		// origin data를 client 정보에서 받아온 데이터에 대입해주기
+		ModifyDrinkInfo(fromClientDrink, originDrink);
+		ModifyMoneyInfo(fromClientMoney, originMoney);
 
 		// 받은 데이터 출력
 		buf[retval] = '\0';
 		printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
-			ntohs(clientaddr.sin_port), drink);
+			ntohs(clientaddr.sin_port), fromClientDrink);
 
-		//SetVendingMachineInfo(buf);
-		printf("%d %d\n", drink[0].price, drink[1].price);
-		drink[0].price = 3;
-		drink[1].price = 4;
-
-		// 데이터 보내기
-		retval = send(client_sock, (char*)&drink, retval, 0);
+		// send money array data to client
+		retval = send(client_sock, (char*)&fromClientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("send()");
+			err_display("money data send");
 			break;
 		}
-
-		/////////////one more!!////////////////////
-		printf("\n=============================\n");
-		retval = recv(client_sock, (char*)&money, BUFSIZE, 0);
-		money[0].value = 98;
-		retval = send(client_sock, (char*)&money, retval, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("one more send error from server");
-			break;
-		}
+		printf("send2\n");
 	}
 
 	//closesocket

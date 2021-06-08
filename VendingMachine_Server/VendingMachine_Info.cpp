@@ -15,9 +15,10 @@ struct moneyInfo {
 	int count;
 };
 
-drinkInfo originDrink[DRINK_SIZE];
-moneyInfo originMoney[MONEY_SIZE];
+//drinkInfo originDrink[DRINK_SIZE];
+//moneyInfo originMoney[MONEY_SIZE];
 
+// 처음의 초기값 설정 (고정값, 나중에 DB에서 받아오는 역할)
 void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]) {
 	//water
 	strcpy(initialDrink[0].name, "water");
@@ -60,6 +61,7 @@ void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]) {
 	initialMoney[4].count = 5;
 }
 
+// 클라이언트로 받은 결과를 서버의 drink에 복사하는 역할
 void ModifyDrinkInfo(drinkInfo originDrink[], drinkInfo modifyDrink[]) {
 	for (int i = 0; i < DRINK_SIZE; i++) {
 		strcpy(originDrink[i].name, modifyDrink[i].name);
@@ -68,6 +70,7 @@ void ModifyDrinkInfo(drinkInfo originDrink[], drinkInfo modifyDrink[]) {
 	}
 }
 
+// 클라이언트로 받은 결과를 서버의 money아ㅔ 복하는 역할
 void ModifyMoneyInfo(moneyInfo originMoney[], moneyInfo modifyMoney[]) {
 	for (int i = 0; i < MONEY_SIZE; i++) {
 		originMoney[i].count = modifyMoney[i].count;
