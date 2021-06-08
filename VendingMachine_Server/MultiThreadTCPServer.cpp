@@ -22,7 +22,7 @@ struct moneyInfo {
 };
 ///////////////////////////////////////////////////
 
-// ���� �Լ� ���� ����� ����
+// 소켓 함수 오류 출력후 종료
 void err_quit(char* msg)
 {
 	LPVOID lpMsgBuf;
@@ -36,7 +36,7 @@ void err_quit(char* msg)
 	exit(1);
 }
 
-//���� �Լ� ���� ���
+//소켓 함수 오류 출력
 void err_display(char* msg)
 {
 	LPVOID lpMsgBuf;
@@ -49,7 +49,7 @@ void err_display(char* msg)
 	LocalFree(lpMsgBuf);
 }
 
-// Ŭ���̾�Ʈ�� ������ ���
+// 클라이언트와 데이터 통신
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
 	SOCKET client_sock = (SOCKET)arg;
@@ -62,16 +62,12 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	moneyInfo money[BUFSIZE + 1];
 	///////////////////////////////////////////////
 
-	// Ŭ���̾�Ʈ ���� ���
+	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
 	while (1) {
-		/////////////////////////////////////////////////////
-
-		///////////////////////////////////////////////////////
-
-		// ������ �ޱ�
+		// 데이터 받기
 		retval = recv(client_sock, (char*)&drink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
@@ -80,7 +76,9 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		else if (retval == 0)
 			break;
 
-		// ���� ������ ���
+		//retval = recv(client_sock, (char*)&money, BUFSIZE, 0);
+
+		// 받은 데이터 출력
 		buf[retval] = '\0';
 		printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
 			ntohs(clientaddr.sin_port), drink);
@@ -90,7 +88,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		drink[0].price = 3;
 		drink[1].price = 4;
 
-		// ������ ������
+		// 데이터 보내기
 		retval = send(client_sock, (char*)&drink, retval, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
@@ -110,7 +108,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 	//closesocket
 	closesocket(client_sock);
-	printf("[TCP ����] Ŭ���̾�Ʈ ����: IP �ּ�=%s, ��Ʈ ��ȣ=%d\n",
+	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n",
 		inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 	return 0;
@@ -120,7 +118,7 @@ int main(int argc, char* argv[])
 {
 	int retval;
 
-	// ���� �ʱ�ȭ
+	// 윈속 초기화
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
@@ -142,7 +140,7 @@ int main(int argc, char* argv[])
 	retval = listen(listen_sock, SOMAXCONN);
 	if (retval == SOCKET_ERROR) err_quit("listen()");
 
-	// ������ ��ſ� ����� ����
+	// 데이터 통신에 사용할 변수
 	SOCKET client_sock;
 	SOCKADDR_IN clientaddr;
 	int addrlen;
@@ -157,11 +155,11 @@ int main(int argc, char* argv[])
 			break;
 		}
 
-		// ������ Ŭ���̾�Ʈ ���� ���
-		printf("\n[TCP ����] Ŭ���̾�Ʈ ����: IP �ּ�=%s, ��Ʈ ��ȣ=%d\n",
+		// 접속한 클라이언트 정보 출력
+		printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
 			inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
-		// ������ ����
+		// 스레드 생성
 		hThread = CreateThread(NULL, 0, ProcessClient,
 			(LPVOID)client_sock, 0, NULL);
 		if (hThread == NULL) { closesocket(client_sock); }
@@ -171,7 +169,7 @@ int main(int argc, char* argv[])
 	//closesocket
 	closesocket(listen_sock);
 
-	// ���� ����
+	// 윈속 종료
 	WSACleanup();
 	return 0;
 }
