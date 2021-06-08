@@ -70,9 +70,10 @@ void ModifyDrinkInfo(drinkInfo originDrink[], drinkInfo modifyDrink[]) {
 	}
 }
 
-// 클라이언트로 받은 결과를 서버의 money아ㅔ 복하는 역할
+// 클라이언트로 받은 결과를 서버의 money에 복사하는 역할
 void ModifyMoneyInfo(moneyInfo originMoney[], moneyInfo modifyMoney[]) {
 	for (int i = 0; i < MONEY_SIZE; i++) {
+		originMoney[i].value = modifyMoney[i].value;
 		originMoney[i].count = modifyMoney[i].count;
 	}
 }

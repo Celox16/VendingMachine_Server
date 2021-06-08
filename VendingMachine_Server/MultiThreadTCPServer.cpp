@@ -9,14 +9,14 @@
 #define DRINK_SIZE	5
 #define MONEY_SIZE	5
 
-//////////define variables and functions///////////
+//define variables and functions
 struct drinkInfo {
-	char name[20];
 	int price;
 	int count;
 };
 
 struct moneyInfo {
+	char temp[20];
 	int value;
 	int count;
 };
@@ -25,11 +25,8 @@ extern void SetInitial(drinkInfo initialDrink[], moneyInfo initialMoney[]);
 extern void ModifyDrinkInfo(drinkInfo originDrink[], drinkInfo modifyDrink[]);
 extern void ModifyMoneyInfo(moneyInfo originMoney[], moneyInfo modifyMoney[]);
 
-
-
 drinkInfo originDrink[DRINK_SIZE];
 moneyInfo originMoney[MONEY_SIZE];
-///////////////////////////////////////////////////
 
 // 소켓 함수 오류 출력후 종료
 void err_quit(char* msg)
@@ -61,13 +58,13 @@ void err_display(char* msg)
 // 클라이언트와 데이터 통신
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
-	SOCKET client_sock = (SOCKET)arg; // drink socket
-	int retval; // drink retval
+	SOCKET client_sock = (SOCKET)arg;
+	int retval; 
 	SOCKADDR_IN clientaddr;
 	int addrlen;
 	int buf[BUFSIZE + 1];
 
-	////// from client data /////////
+	// from client data
 	drinkInfo fromClientDrink[DRINK_SIZE];
 	moneyInfo fromClientMoney[MONEY_SIZE];
 
@@ -75,11 +72,11 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
-	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen); // getpeername - drink
+	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
 	while (1) {
-		// data receive drink array data
-		retval = recv(client_sock, (char*)&fromClientDrink, BUFSIZE, 0);
+		// receive drink array data
+		retval = recv(client_sock, (char*)fromClientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("drink receive");
 			break;
@@ -88,16 +85,19 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			break;
 		printf("recv\n");
 
+		//received drink data modify
+		ModifyDrinkInfo(fromClientDrink, originDrink);
+
 		// send drink array data to client
-		retval = send(client_sock, (char*)&fromClientDrink, BUFSIZE, 0);
+		retval = send(client_sock, (char*)fromClientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("money data send");
 			break;
 		}
 		printf("send\n");
 
-		// data receive money array data
-		retval = recv(client_sock, (char*)&fromClientMoney, BUFSIZE, 0);
+		// receive money array data
+		retval = recv(client_sock, (char*)fromClientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("money receive");
 			break;
@@ -105,18 +105,16 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		else if (retval == 0)
 			break;
 		printf("recv2\n");
-		
-		// origin data를 client 정보에서 받아온 데이터에 대입해주기
-		ModifyDrinkInfo(fromClientDrink, originDrink);
+
+		printf("value = %d, count = %d\n", fromClientMoney[0].value, fromClientMoney[0].count);
+
+		//received money data modify
 		ModifyMoneyInfo(fromClientMoney, originMoney);
 
-		// 받은 데이터 출력
-		buf[retval] = '\0';
-		printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
-			ntohs(clientaddr.sin_port), fromClientDrink);
+		printf("value = %d, count = %d\n", fromClientMoney[0].value, fromClientMoney[0].count);
 
 		// send money array data to client
-		retval = send(client_sock, (char*)&fromClientMoney, BUFSIZE, 0);
+		retval = send(client_sock, (char*)fromClientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("money data send");
 			break;
