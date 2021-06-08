@@ -6,7 +6,7 @@
 #define SERVERPORT	9000
 #define BUFSIZE		1024
 
-//////////define variables and functions///////////
+//////////define variables and functions///////////테스트용
 extern void SetVendingMachineInfo(char vendingMachineInfo[]);
 char vendingMachineInfo[12];
 
