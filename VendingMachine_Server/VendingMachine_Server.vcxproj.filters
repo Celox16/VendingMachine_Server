@@ -18,5 +18,8 @@
     <ClCompile Include="MultiThreadTCPServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="VendingMachine_Info.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

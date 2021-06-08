@@ -6,6 +6,22 @@
 #define SERVERPORT	9000
 #define BUFSIZE		1024
 
+//////////define variables and functions///////////
+extern void SetVendingMachineInfo(char vendingMachineInfo[]);
+char vendingMachineInfo[12];
+
+struct drinkInfo {
+	char name[20];
+	int price;
+	int count;
+};
+
+struct moneyInfo {
+	int value;
+	int count;
+};
+///////////////////////////////////////////////////
+
 // 소켓 함수 오류 출력후 종료
 void err_quit(char* msg)
 {
@@ -40,19 +56,19 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	int retval;
 	SOCKADDR_IN clientaddr;
 	int addrlen;
-	char buf[BUFSIZE + 1];	
+	int buf[BUFSIZE + 1];
+	////////if array is struct array?////////////
+	drinkInfo drink[BUFSIZE + 1];
+	moneyInfo money[BUFSIZE + 1];
+	///////////////////////////////////////////////
 
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
 	while (1) {
-		/////////////////////////////////////////////////////
-
-		///////////////////////////////////////////////////////
-
 		// 데이터 받기
-		retval = recv(client_sock, buf, BUFSIZE, 0);
+		retval = recv(client_sock, (char*)&drink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
 			break;
@@ -60,15 +76,32 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		else if (retval == 0)
 			break;
 
-		// 받은 데이터 출력 test
+		//retval = recv(client_sock, (char*)&money, BUFSIZE, 0);
+
+		// 받은 데이터 출력
 		buf[retval] = '\0';
 		printf("[TCP/%s:%d] %s\n", inet_ntoa(clientaddr.sin_addr),
-			ntohs(clientaddr.sin_port), buf);
+			ntohs(clientaddr.sin_port), drink);
+
+		//SetVendingMachineInfo(buf);
+		printf("%d %d\n", drink[0].price, drink[1].price);
+		drink[0].price = 3;
+		drink[1].price = 4;
 
 		// 데이터 보내기
-		retval = send(client_sock, buf, retval, 0);
+		retval = send(client_sock, (char*)&drink, retval, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
+			break;
+		}
+
+		/////////////one more!!////////////////////
+		printf("\n=============================\n");
+		retval = recv(client_sock, (char*)&money, BUFSIZE, 0);
+		money[0].value = 98;
+		retval = send(client_sock, (char*)&money, retval, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("one more send error from server");
 			break;
 		}
 	}
