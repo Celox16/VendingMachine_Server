@@ -11,6 +11,7 @@
 
 //define variables and functions
 struct drinkInfo {
+	char name[20];
 	int price;
 	int count;
 };
@@ -76,7 +77,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 	while (1) {
 		// receive drink array data
-		retval = recv(client_sock, (char*)fromClientDrink, BUFSIZE, 0);
+		retval = recv(client_sock, (char*)&fromClientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("drink receive");
 			break;
@@ -89,7 +90,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		ModifyDrinkInfo(fromClientDrink, originDrink);
 
 		// send drink array data to client
-		retval = send(client_sock, (char*)fromClientDrink, BUFSIZE, 0);
+		retval = send(client_sock, (char*)&fromClientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("money data send");
 			break;
@@ -97,7 +98,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		printf("send\n");
 
 		// receive money array data
-		retval = recv(client_sock, (char*)fromClientMoney, BUFSIZE, 0);
+		retval = recv(client_sock, (char*)&fromClientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("money receive");
 			break;
@@ -106,15 +107,11 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			break;
 		printf("recv2\n");
 
-		printf("value = %d, count = %d\n", fromClientMoney[0].value, fromClientMoney[0].count);
-
 		//received money data modify
 		ModifyMoneyInfo(fromClientMoney, originMoney);
 
-		printf("value = %d, count = %d\n", fromClientMoney[0].value, fromClientMoney[0].count);
-
 		// send money array data to client
-		retval = send(client_sock, (char*)fromClientMoney, BUFSIZE, 0);
+		retval = send(client_sock, (char*)&fromClientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("money data send");
 			break;
@@ -124,7 +121,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		// after client logic
 
 		//receive modified drink data from client
-		retval = recv(client_sock, (char*)fromClientDrink, BUFSIZE, 0);
+		retval = recv(client_sock, (char*)&fromClientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("money receive");
 			break;
@@ -136,7 +133,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		ModifyDrinkInfo(originDrink, fromClientDrink);
 
 		// send drink array data to client
-		retval = send(client_sock, (char*)fromClientDrink, BUFSIZE, 0);
+		retval = send(client_sock, (char*)&fromClientDrink, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("drink data send");
 			break;
@@ -144,7 +141,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		printf("send modified drink data\n");
 
 		//receive modified money data from client
-		retval = recv(client_sock, (char*)fromClientMoney, BUFSIZE, 0);
+		retval = recv(client_sock, (char*)&fromClientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("drink receive");
 			break;
@@ -156,7 +153,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		ModifyMoneyInfo(originMoney, fromClientMoney);
 
 		// send money array data to client
-		retval = send(client_sock, (char*)fromClientMoney, BUFSIZE, 0);
+		retval = send(client_sock, (char*)&fromClientMoney, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("money data send");
 			break;
