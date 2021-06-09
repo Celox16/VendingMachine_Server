@@ -120,6 +120,48 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			break;
 		}
 		printf("send2\n");
+
+		// after client logic
+
+		//receive modified drink data from client
+		retval = recv(client_sock, (char*)fromClientDrink, BUFSIZE, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("money receive");
+			break;
+		}
+		else if (retval == 0)
+			break;
+		printf("receive modified drink data from client\n");
+
+		ModifyDrinkInfo(originDrink, fromClientDrink);
+
+		// send drink array data to client
+		retval = send(client_sock, (char*)fromClientDrink, BUFSIZE, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("drink data send");
+			break;
+		}
+		printf("send modified drink data\n");
+
+		//receive modified money data from client
+		retval = recv(client_sock, (char*)fromClientMoney, BUFSIZE, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("drink receive");
+			break;
+		}
+		else if (retval == 0)
+			break;
+		printf("receive modified drink data from client\n");
+
+		ModifyMoneyInfo(originMoney, fromClientMoney);
+
+		// send money array data to client
+		retval = send(client_sock, (char*)fromClientMoney, BUFSIZE, 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("money data send");
+			break;
+		}
+		printf("send modified drink data\n");
 	}
 
 	//closesocket
