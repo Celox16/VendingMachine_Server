@@ -1,0 +1,5 @@
+water 450 3
+coffee 500 3
+ion_drink 550 3
+fine_coffee 700 3
+carbo_drink 750 3

@@ -77,3 +77,4 @@ void ModifyMoneyInfo(moneyInfo originMoney[], moneyInfo modifyMoney[]) {
 		originMoney[i].count = modifyMoney[i].count;
 	}
 }
+
