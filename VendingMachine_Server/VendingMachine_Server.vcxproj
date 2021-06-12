@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConnectDB.cpp" />
     <ClCompile Include="MultiThreadTCPServer.cpp" />
     <ClCompile Include="VendingMachine_Info.cpp" />
   </ItemGroup>
