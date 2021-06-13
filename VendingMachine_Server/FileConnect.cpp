@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MONEY_SIZE 5
-#define DRINK_SIZE 5
+#define MONEY_SIZE	5
+#define DRINK_SIZE	5
 
 struct drinkInfo {
 	char name[20];
